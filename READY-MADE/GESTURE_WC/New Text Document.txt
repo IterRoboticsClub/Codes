@@ -1,0 +1,157 @@
+/* 3.3V accelerometer self test
+ analog 1: z-axis
+ analog 2: y-axis
+ analog 3: x-axis
+ 
+ 5V : VCC
+ Gnd: GND
+*/
+
+#include<LiquidCrystal.h>
+
+LiquidCrystal lcd(12,11,5,4,3,2);
+
+int contr_pin=9;
+
+const int xpin = A1;                  // x-axis of the accelerometer
+const int ypin = A2;                  // y-axis
+int X=0,Y=0,Z=0,speed1=150,speed2=150; 
+
+void setup()
+{
+  lcd.begin(16,2);
+  analogWrite(contr_pin,10);
+  Serial.begin(9600);
+  pinMode(7,OUTPUT);
+  pinMode(8,OUTPUT);
+  pinMode(40,OUTPUT);
+  pinMode(41,OUTPUT);
+  pinMode(42,OUTPUT);
+  pinMode(43,OUTPUT);
+  pinMode(A1,INPUT);
+  pinMode(A2,INPUT);
+  lcd.clear();
+}
+
+void loop()
+{
+  X=analogRead(xpin);
+  Y=analogRead(ypin);
+  // print the sensor values:
+\
+Serial.print(X);
+  // print a tab between values:
+  Serial.print("\t");
+  Serial.print(Y);
+  // print a tab between values:
+  Serial.print("\t");
+  Serial.print(Z);
+  Serial.println();
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("X= ");
+  lcd.print(X);
+  lcd.setCursor(0,1);
+  lcd.print("Y= ");
+  lcd.print(Y);
+  //Ref X=338 AND Y=342
+  if((Y>320)&&(Y<360))
+  {
+    if(X<300)
+    {
+      left();
+    }
+    else if(X>380)
+    {
+      right();
+    }
+    
+    else 
+    {
+      halt();
+      
+    }
+  }
+  
+  else if((X>320)&&(X<370))
+  {
+    if(Y>370)
+    {
+      fwd();
+    }
+    
+    else if(Y<310)
+    {
+      
+      back();
+    }
+    
+    else
+    {
+      halt();
+   }
+  }
+  delay(100);
+}
+
+void fwd()
+{
+ Serial.println("I m in Forward");
+ digitalWrite(40,HIGH);
+ digitalWrite(41,LOW);
+ digitalWrite(42,LOW);
+ digitalWrite(43,HIGH);
+ analogWrite(7,speed1);
+ analogWrite(8,speed2);
+ delay(1000);
+}
+
+void back()
+{
+ Serial.println("I m in back");
+ digitalWrite(40,LOW);
+ digitalWrite(41,HIGH);
+ digitalWrite(42,HIGH);
+ digitalWrite(43,LOW);
+ analogWrite(7,speed1);
+ analogWrite(8,speed2);
+ delay(1000);
+}
+
+void right()
+{
+ Serial.println("I m in right");
+ digitalWrite(40,HIGH);
+ digitalWrite(41,LOW);
+ digitalWrite(42,HIGH);
+ digitalWrite(43,LOW);
+ analogWrite(7,50);
+ analogWrite(8,50);
+ delay(1000);
+}
+
+void left()
+{
+  
+ Serial.println("I m in left");
+ digitalWrite(40,LOW);
+ digitalWrite(41,HIGH);
+ digitalWrite(42,LOW);
+ digitalWrite(43,HIGH);
+ analogWrite(7,50);
+ analogWrite(8,50);
+ delay(1000);
+}
+
+void halt()
+{
+  Serial.println("I m in Halt");
+ digitalWrite(40,LOW);
+ digitalWrite(41,LOW);
+ digitalWrite(42,LOW);
+ digitalWrite(43,LOW);
+ analogWrite(7,0);
+ analogWrite(8,0);
+ delay(100);
+}
+  
